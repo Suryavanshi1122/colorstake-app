@@ -1,0 +1,52 @@
+
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";  // 👉 यह Import करना जरूरी है
+
+function LoginPage({ onLogin }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();  // 👉 Navigation ke liye useNavigate
+
+  const handleLogin = () => {
+    if (username && password) {
+      setSuccessMessage(`✅ Welcome, ${username}! You have successfully logged in.`);
+      onLogin();   // parent ko batana
+      setTimeout(() => {
+        navigate("/colorselect");  // 👉 2 second ke baad ColorSelectPage par le jao
+      }, 2000);
+    } else {
+      setSuccessMessage("");
+      alert("❌ Please enter both username and password.");
+    }
+  };
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "100px" }}>
+      <h1><b>Login Page</b></h1>
+      <p>Welcome! Please login to continue.</p>
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        style={{ marginBottom: "10px", padding: "5px", width: "200px" }}
+      /><br />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={{ marginBottom: "10px", padding: "5px", width: "200px" }}
+      /><br />
+      <button onClick={handleLogin} style={{ padding: "5px 20px" }}>
+        Login
+      </button>
+      {successMessage && (
+        <div style={{ color: "green", marginTop: "20px" }}>{successMessage}</div>
+      )}
+    </div>
+  );
+}
+
+export default LoginPage;

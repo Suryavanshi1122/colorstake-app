@@ -1,0 +1,83 @@
+import React, { useState, useEffect } from 'react';
+
+const colors = ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange', 'Pink'];
+
+function ColorSelectPage() {
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const storedStake = localStorage.getItem('userStake');
+    if (storedStake) {
+      const stakeInfo = JSON.parse(storedStake);
+      setMessage(`Previously, you staked ${stakeInfo.amount} USDT on ${stakeInfo.color}.`);
+    }
+  }, []);
+
+  const handleColorClick = (color) => {
+    const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD" format
+    const storedStake = localStorage.getItem('userStake');
+
+    if (storedStake) {
+      const stakeInfo = JSON.parse(storedStake);
+      const stakeDate = stakeInfo.date;
+
+      // ✅ अगर आज ही का stake है, तो block कर दो
+      if (stakeDate === today) {
+        setMessage('❌ आपने आज पहले ही stake कर लिया है। आप कल फिर से कोशिश कर सकते हैं।');
+        return;
+      }
+    }
+
+    const amount = prompt(`You selected ${color}. Enter amount to stake:`);
+
+    if (amount) {
+      const stakeData = {
+        color: color,
+        amount: amount,
+        date: today, // ✅ आज की date भी save करेंगे
+        time: new Date().toISOString(),
+      };
+
+      localStorage.setItem('userStake', JSON.stringify(stakeData));
+
+      setMessage(`✅ आपने सफलतापूर्वक ${amount} USDT ${color} रंग पर stake किया है!`);
+    } else {
+      setMessage('❌ Stake cancel कर दिया गया।');
+    }
+  };
+
+  return (
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <h1>Select Your Color</h1>
+      <p>Choose one color to stake!</p>
+      <div style={{ marginTop: '30px' }}>
+        {colors.map((color) => (
+          <button
+            key={color}
+            style={{
+              margin: '10px',
+              padding: '15px 25px',
+              backgroundColor: color.toLowerCase(),
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '16px'
+            }}
+            onClick={() => handleColorClick(color)}
+          >
+            {color}
+          </button>
+        ))}
+      </div>
+
+      {message && (
+        <div style={{ marginTop: '40px', fontSize: '18px', color: 'green' }}>
+          {message}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default ColorSelectPage;
