@@ -2,6 +2,27 @@
 import React, { useState, useEffect } from 'react';
 
 const AdminPanel = () => {
+  // State for password protection
+  const [password, setPassword] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState('');
+
+  // Hardcoded password (you can change this)
+  const correctPassword = 'Rohit7400#'; // Yeh password aap apne hisaab se change kar sakte ho
+
+  // Function to handle password submission
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    if (password === correctPassword) {
+      setIsAuthenticated(true);
+      setError('');
+    } else {
+      setIsAuthenticated(false);
+      setError('Incorrect password! Please try again.');
+    }
+  };
+
+  // Existing states for admin panel functionality
   const [deposits, setDeposits] = useState([]);
   const [withdrawals, setWithdrawals] = useState([]);
   const [colorStakes, setColorStakes] = useState({});
@@ -115,11 +136,35 @@ const AdminPanel = () => {
     localStorage.setItem('userData', JSON.stringify(userData));
     localStorage.setItem('winnersData', JSON.stringify(winners));
 
-    alert(`✅ आज का कलर '${selectedColor}' ओपन किया गया। विजेताओं को इनाम मिल गया।`);
+    alert(`✅ आज का कलर '${lowestColor}' ओपन किया गया। विजेताओं को इनाम मिल गया।`);
   };
 
   const allColors = ['Blue', 'Orange', 'Black', 'Green', 'Red', 'Purple', 'Yellow'];
 
+  // If not authenticated, show the password input form
+  if (!isAuthenticated) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+        <h2>Enter Password to Access Admin Panel</h2>
+        <form onSubmit={handlePasswordSubmit}>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter password"
+            style={{ padding: '10px', margin: '10px', fontSize: '16px' }}
+          />
+          <br />
+          <button type="submit" style={{ padding: '10px 20px', fontSize: '16px' }}>
+            Submit
+          </button>
+        </form>
+        {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+      </div>
+    );
+  }
+
+  // If authenticated, show the admin panel content
   return (
     <div style={{ padding: '20px' }}>
       <h2>🧾 डिपॉज़िट रिक्वेस्ट</h2>
